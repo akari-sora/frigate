@@ -103,6 +103,13 @@ if [[ "${TARGETARCH}" == "amd64" ]]; then
         libva-drm2 \
         mesa-va-drivers radeontop
 
+    # AMD VA-API driver from bookworm-backports. Bookworm's Mesa 22.3.6 lacks
+    # "radeonsi/vcn: Add decode DPB buffers as CS dependency" (Mesa 24.2), so
+    # decoding several streams on AMD APUs can hit VCN page faults and hang the GPU.
+    echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/bookworm-backports.list
+    apt-get -qq update
+    apt-get -qq install --no-install-recommends --no-install-suggests -y -t bookworm-backports mesa-va-drivers
+
     # intel packages use zst compression so we need to update dpkg
     apt-get install -y dpkg
 
